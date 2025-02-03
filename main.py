@@ -14,6 +14,9 @@ LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT = 353, 344
 TEXT_COLOR = (255, 255, 255)
 BG_COLOR = (28, 170, 156)
 
+# Images
+wrong_image = "Red_X.svg.png"
+
 # User info
 levels_unlocked = [1, 2]
 
@@ -77,6 +80,8 @@ def level_1():
     global screen_state
 
     screen.fill(BG_COLOR)
+    x = (WIDTH-LEVEL_1_IMAGE_WIDTH)/2
+    y = (HEIGHT-LEVEL_1_IMAGE_HEIGHT)/2
     screen.blit(lvl1_image, ((WIDTH-LEVEL_1_IMAGE_WIDTH)/2, (HEIGHT-LEVEL_1_IMAGE_HEIGHT)/2))
     
     for event in pygame.event.get():
@@ -85,15 +90,15 @@ def level_1():
             sys.exit()
         
         if event.type == pygame.K_ESCAPE:
-            print('key pressed')
+            print('key pressed')    
             screen_state = 'main_menu'
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            if 300 < mouse_x < 500 and 8 < mouse_y < 10:
+            if (x) < mouse_x < (1/3 * LEVEL_1_IMAGE_WIDTH + x) and (2/3 * LEVEL_1_IMAGE_HEIGHT + y) < mouse_y < (LEVEL_1_IMAGE_HEIGHT + y):
                 print('correct')
-
-
+            else: 
+                popup(wrong_image, 5)
 
 def level_2():
     global screen_state
@@ -109,6 +114,11 @@ def level_2():
             break
         else:
             print("You are wrong Try again")
+
+def popup(img, duration): 
+    screen.blit(img, (0, 0))
+    pygame.display.update()
+    pygame.time.wait(duration/1000)
 
 while True: 
     match screen_state: 
