@@ -1,12 +1,14 @@
 import pygame
+from pygame import Surface
 import sys
+
 
 # Initialize Pygame
 pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-BUTTON_WIDTH, BUTTON_HEIGHT = 200, 50
+BUTTON_WIDTH, BUTTON_HEIGHT = 2/13 * WIDTH, 1/11 * HEIGHT
 LEVEL_BUTTON_COLOR = (0, 128, 255)
 LEVEL_HOVER_COLOR = (0, 255, 255)
 LEVEL_LOCKED_COLOR = (128, 128, 128)
@@ -15,22 +17,26 @@ TEXT_COLOR = (255, 255, 255)
 BG_COLOR = (28, 170, 156)
 
 # Images
-wrong_image = "Red_X.svg.png"
+wrong_image = pygame.image.load("Red_X.svg.png")
+wrong_image = pygame.transform.scale(wrong_image, (.1 * WIDTH, .1 * HEIGHT))
+right_image = pygame.image.load("Green_check.svg.png")
+right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
+lvl1_image = pygame.image.load("level_1.png")
+lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1, 2]
+levels_unlocked = [1]
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen_state = 'main_menu'
 pygame.display.set_caption("Puzzle Game Level Selector")
-lvl1_image = pygame.image.load("level_1.png")
 
 # Font setup
 font = pygame.font.Font(None, 40)
 
 # Function to draw buttons
-def draw_level_button(text, x, y, unlocked):
+def draw_button(text, x, y, unlocked):
     # Draw the button
     mouse_x, mouse_y = pygame.mouse.get_pos()
     if not unlocked: # If the level is locked, draw a grey button
@@ -45,17 +51,17 @@ def draw_level_button(text, x, y, unlocked):
     text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
     screen.blit(text_surface, text_rect)
 
+def draw_level_buttons():
+
+    for i in range(1,5): 
+        draw_button(f"Level {i}", 1/13 * WIDTH, (2*BUTTON_HEIGHT) + (i-1)*BUTTON_HEIGHT, i in levels_unlocked)
+
 # Main menu loop
 def main_menu():
     global screen_state
 
     screen.fill(BG_COLOR)
-
-    # Draw buttons for levels
-    draw_level_button("Level 1", 300, 150, 1 in levels_unlocked)
-    draw_level_button("Level 2", 300, 250, 2 in levels_unlocked)
-    draw_level_button("Level 3", 300, 350, 3 in levels_unlocked)
-    draw_level_button("Level 4", 300, 450, 4 in levels_unlocked)
+    draw_level_buttons()
 
     # Event handling
     for event in pygame.event.get():
@@ -68,9 +74,9 @@ def main_menu():
             # Check if the player clicked on a button
             if 300 < mouse_x < 500:
                 if 150 < mouse_y < 200:
-                    screen_state = 'level_1'
+                    set_screen_state('level_1')
                 elif 250 < mouse_y < 300:
-                    screen_state = 'level_2'
+                    set_screen_state('level_2')
                 elif 350 < mouse_y < 400:
                     pass
                 elif 450 < mouse_y < 500:
@@ -91,14 +97,16 @@ def level_1():
         
         if event.type == pygame.K_ESCAPE:
             print('key pressed')    
-            screen_state = 'main_menu'
+            set_screen_state('main_menu')
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
             if (x) < mouse_x < (1/3 * LEVEL_1_IMAGE_WIDTH + x) and (2/3 * LEVEL_1_IMAGE_HEIGHT + y) < mouse_y < (LEVEL_1_IMAGE_HEIGHT + y):
-                print('correct')
+                popup(right_image, 1000)
+                unlock_level(2)
+                set_screen_state('main_menu')
             else: 
-                popup(wrong_image, 5)
+                popup(wrong_image, 1000)
 
 def level_2():
     global screen_state
@@ -115,10 +123,17 @@ def level_2():
         else:
             print("You are wrong Try again")
 
-def popup(img, duration): 
-    screen.blit(img, (0, 0))
+def popup(img: Surface, duration): 
+    screen.blit(img, (WIDTH/2 - img.get_width()/2, .1*HEIGHT - img.get_height()/2))
     pygame.display.update()
-    pygame.time.wait(duration/1000)
+    pygame.time.wait(duration)
+
+def unlock_level(level):
+    levels_unlocked.append(level)
+
+def set_screen_state(state):
+    global screen_state
+    screen_state = state
 
 while True: 
     match screen_state: 
