@@ -8,7 +8,7 @@ pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-BUTTON_WIDTH, BUTTON_HEIGHT = 2/13 * WIDTH, 1/11 * HEIGHT
+BUTTON_WIDTH, BUTTON_HEIGHT = 3/17 * WIDTH, 1/11 * HEIGHT
 LEVEL_BUTTON_COLOR = (0, 128, 255)
 LEVEL_HOVER_COLOR = (0, 255, 255)
 LEVEL_LOCKED_COLOR = (128, 128, 128)
@@ -25,7 +25,7 @@ lvl1_image = pygame.image.load("level_1.png")
 lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1]
+levels_unlocked = [1,2]
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -34,6 +34,8 @@ pygame.display.set_caption("Puzzle Game Level Selector")
 
 # Font setup
 font = pygame.font.Font(None, 40)
+
+user_input = ""
 
 # Function to draw buttons
 def draw_button(text, x, y, unlocked):
@@ -52,9 +54,9 @@ def draw_button(text, x, y, unlocked):
     screen.blit(text_surface, text_rect)
 
 def draw_level_buttons():
-
-    for i in range(1,5): 
-        draw_button(f"Level {i}", 1/13 * WIDTH, (2*BUTTON_HEIGHT) + (i-1)*BUTTON_HEIGHT, i in levels_unlocked)
+    for x in range(4):
+        for y in range(5):
+            draw_button(f"Level {x*5+y+1}", 1/17 * WIDTH + x*4/17 * WIDTH, 2*y*BUTTON_HEIGHT + BUTTON_HEIGHT, x*5+y+1 in levels_unlocked)
 
 # Main menu loop
 def main_menu():
@@ -71,20 +73,17 @@ def main_menu():
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            # Check if the player clicked on a button
-            if 300 < mouse_x < 500:
-                if 150 < mouse_y < 200:
-                    set_screen_state('level_1')
-                elif 250 < mouse_y < 300:
-                    set_screen_state('level_2')
-                elif 350 < mouse_y < 400:
-                    pass
-                elif 450 < mouse_y < 500:
-                    pass
+            for x in range(4):
+                for y in range(5):
+                    level = x * 5 + y + 1
+                    button_x = 1/17 * WIDTH + x * 4/17 * WIDTH
+                    button_y = 2 * y * BUTTON_HEIGHT + BUTTON_HEIGHT
+                    if button_x < mouse_x < button_x + BUTTON_WIDTH and button_y < mouse_y < button_y + BUTTON_HEIGHT:
+                        if level in levels_unlocked:
+                            set_screen_state(f'level_{level}')
+
 
 def level_1():
-    global screen_state
-
     screen.fill(BG_COLOR)
     x = (WIDTH-LEVEL_1_IMAGE_WIDTH)/2
     y = (HEIGHT-LEVEL_1_IMAGE_HEIGHT)/2
@@ -95,9 +94,9 @@ def level_1():
             pygame.quit()
             sys.exit()
         
-        if event.type == pygame.K_ESCAPE:
-            print('key pressed')    
-            set_screen_state('main_menu')
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                set_screen_state('main_menu')
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
@@ -109,27 +108,61 @@ def level_1():
                 popup(wrong_image, 1000)
 
 def level_2():
-    global screen_state
-    
+    global user_input  
     screen.fill(BG_COLOR)
-    print("I am thinking of a five letter word. When you remove its first letter, it still sounds the same. When you remove the third letter, it still sounds the same. When you remove the whole word. it's still the same! What’s the word?")
-    while True:
-        answer = input("What is the five letter word: ")
-        if answer == "empty":
-            print("You are correct! You can move on to the next level")
-            screen_state = 'main_menu'
-            levels_unlocked.append(3)
-            break
-        else:
-            print("You are wrong Try again")
 
-def popup(img: Surface, duration): 
-    screen.blit(img, (WIDTH/2 - img.get_width()/2, .1*HEIGHT - img.get_height()/2))
-    pygame.display.update()
-    pygame.time.wait(duration)
+    clue_text = [
+        "Remove the first letter, I sound the same.",
+        "Then remove the last letter, I still sound the same.",
+        "Then remove the middle letter, and I still sound the same again.", 
+        "What word am I?"
+    ]
+    
+    input_box = pygame.Rect(WIDTH//2 - 100, HEIGHT//2, 200, 40)
+    clue_font = pygame.font.Font(None, 36)
+
+    # Draw the clue text line by line
+    for i, line in enumerate(clue_text):
+        text_surface = clue_font.render(line, True, TEXT_COLOR)
+        screen.blit(text_surface, (WIDTH//2 - text_surface.get_width()//2, HEIGHT//6 + i * 40))
+
+    pygame.draw.rect(screen, LEVEL_BUTTON_COLOR, input_box, 2)
+
+    input_text = clue_font.render(user_input.upper(), True, TEXT_COLOR)
+    screen.blit(input_text, (input_box.x+5, input_box.y+5))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                set_screen_state('main_menu')
+            elif event.key == pygame.K_RETURN:
+                if user_input.upper() == "EMPTY":
+                    unlock_level(3)
+                    set_screen_state('main_menu')
+                else:
+                    user_input = ""
+            elif event.key == pygame.K_BACKSPACE:
+                user_input = user_input[:-1]
+            else:
+                user_input += event.unicode
+
+
+def popup(img: Surface, duration):
+    start_time = pygame.time.get_ticks()
+    while pygame.time.get_ticks() - start_time < duration:
+        screen.blit(img, (WIDTH/2 - img.get_width()/2, .1*HEIGHT - img.get_height()/2))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
 def unlock_level(level):
-    levels_unlocked.append(level)
+    if level not in levels_unlocked:   
+        levels_unlocked.append(level)
 
 def set_screen_state(state):
     global screen_state
