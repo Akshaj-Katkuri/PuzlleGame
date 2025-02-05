@@ -15,17 +15,18 @@ LEVEL_LOCKED_COLOR = (128, 128, 128)
 LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT = 353, 344
 TEXT_COLOR = (255, 255, 255)
 BG_COLOR = (28, 170, 156)
-
+LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992, 985
 # Images
 wrong_image = pygame.image.load("Red_X.svg.png")
 wrong_image = pygame.transform.scale(wrong_image, (.1 * WIDTH, .1 * HEIGHT))
 right_image = pygame.image.load("Green_check.svg.png")
 right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
 lvl1_image = pygame.image.load("level_1.png")
-lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
-
+lvl1_image = pygame.transform.scale(lvl1_image, (353/800 * WIDTH, 344/600 * HEIGHT))
+lvl3_image = pygame.image.load("chesspuzlle.png")
+lvl3_image = pygame.transform.scale(lvl3_image, (LEVEL_3_IMAGE_WIDTH/3, LEVEL_3_IMAGE_HEIGHT/3))
 # User info
-levels_unlocked = [1,2]
+levels_unlocked = [1]
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -149,6 +150,10 @@ def level_2():
             else:
                 user_input += event.unicode
 
+def level_3():
+    screen.fill(BG_COLOR)
+    screen.blit(lvl3_image)
+
 
 def popup(img: Surface, duration):
     start_time = pygame.time.get_ticks()
@@ -163,6 +168,9 @@ def popup(img: Surface, duration):
 def unlock_level(level):
     if level not in levels_unlocked:   
         levels_unlocked.append(level)
+
+def center_image(img_width, img_height):
+    return (WIDTH - img_width) / 2, (HEIGHT - img_height) / 2
 
 def set_screen_state(state):
     global screen_state

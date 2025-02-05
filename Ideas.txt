@@ -10,3 +10,11 @@ Level 9: Trivia!
 Level 10: Figure out the music piece with the sheet music
 Level 11: Translate sentence from Spanish
 Level 12: Figure out the song with short audio clip
+Level 13: Guess Brawler by voice line 
+Level 14: 
+Level 15:
+Level 16:
+Level 17:
+Level 18:
+Level 19:
+Level 20:
