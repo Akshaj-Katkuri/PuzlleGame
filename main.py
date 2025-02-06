@@ -110,16 +110,24 @@ def level_1():
             else: 
                 popup(wrong_image, 1000)
 
-def handle_user_input(clue_text: str, correct_answer: str):
+def handle_user_input(clue_text: list[str]):
     global user_input
     user_input = ""
-    input_box = pygame.Rect(WIDTH//2 - 100, HEIGHT//2, 200, 40)
+    input_box_y = int(HEIGHT * 0.5)  # Static y-coordinate proportional to screen height
+    input_box = pygame.Rect(WIDTH//2 - 100, input_box_y, 200, 40)
     clue_font = pygame.font.Font(None, 36)
 
     while True:
         screen.fill(BG_COLOR)
-        draw_clue_text(screen, clue_text, clue_font)
-        draw_input_box(screen, input_box, user_input, clue_font)
+        
+        # Display the clue text
+        display_clue(clue_text)
+        
+        # Draw the input box and user input
+        pygame.draw.rect(screen, LEVEL_BUTTON_COLOR, input_box, 2)
+        input_text = clue_font.render(user_input.upper(), True, TEXT_COLOR)
+        screen.blit(input_text, (input_box.x+5, input_box.y+5))
+        
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -137,15 +145,11 @@ def handle_user_input(clue_text: str, correct_answer: str):
                 else:
                     user_input += event.unicode
 
-def draw_clue_text(screen, clue_text, font):
+def display_clue(clue_text: list[str]):
+    clue_font = pygame.font.Font(None, 36)
     for i, line in enumerate(clue_text):
-        text_surface = font.render(line, True, TEXT_COLOR)
+        text_surface = clue_font.render(line, True, TEXT_COLOR)
         screen.blit(text_surface, (WIDTH//2 - text_surface.get_width()//2, HEIGHT//6 + i * 40))
-
-def draw_input_box(screen, input_box, user_input, font):
-    pygame.draw.rect(screen, LEVEL_BUTTON_COLOR, input_box, 2)
-    input_text = font.render(user_input.upper(), True, TEXT_COLOR)
-    screen.blit(input_text, (input_box.x+5, input_box.y+5))
 
 def level_2():
     global user_input
@@ -158,7 +162,7 @@ def level_2():
         "What word am I?"
     ]
 
-    user_input = handle_user_input("EMPTY", 3)
+    user_input = handle_user_input(clue_text)
     if user_input.upper() == "EMPTY":
         unlock_level(3)
         set_screen_state('main_menu')
@@ -168,7 +172,6 @@ def level_2():
 def level_3():
     screen.fill(BG_COLOR)
     screen.blit(lvl3_image)
-
 
 def popup(img: Surface, duration):
     start_time = pygame.time.get_ticks()
