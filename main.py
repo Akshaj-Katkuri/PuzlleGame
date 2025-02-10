@@ -15,7 +15,9 @@ LEVEL_LOCKED_COLOR = (128, 128, 128)
 LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT = 353, 344
 TEXT_COLOR = (255, 255, 255)
 BG_COLOR = (28, 170, 156)
-LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992, 985
+LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992/3, 985/3
+BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
+SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
 
 # Images
 wrong_image = pygame.image.load("Red_X.svg.png")
@@ -25,10 +27,10 @@ right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
 lvl1_image = pygame.image.load("level_1.png")
 lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
 lvl3_image = pygame.image.load("chesspuzlle.png")
-lvl3_image = pygame.transform.scale(lvl3_image, (LEVEL_3_IMAGE_WIDTH/3, LEVEL_3_IMAGE_HEIGHT/3))
+lvl3_image = pygame.transform.scale(lvl3_image, (LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1]
+levels_unlocked = [1, 2, 3, 4]
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -88,9 +90,9 @@ def main_menu():
 
 def level_1():
     screen.fill(BG_COLOR)
-    x = (WIDTH-LEVEL_1_IMAGE_WIDTH)/2
-    y = (HEIGHT-LEVEL_1_IMAGE_HEIGHT)/2
-    screen.blit(lvl1_image, ((WIDTH-LEVEL_1_IMAGE_WIDTH)/2, (HEIGHT-LEVEL_1_IMAGE_HEIGHT)/2))
+    x = find_top_left_x(LEVEL_1_IMAGE_WIDTH)
+    y = find_top_left_y(LEVEL_1_IMAGE_HEIGHT)
+    screen.blit(lvl1_image, (x, y))
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -110,11 +112,11 @@ def level_1():
             else: 
                 popup(wrong_image, 1000)
 
-def handle_user_input(clue_text: list[str]):
+def handle_user_input(clue_text: list[str], width: float, image=None, clue_box_y: float=(0.5*HEIGHT), image_width: float=None, image_height: float=None) -> str:
     global user_input
     user_input = ""
-    input_box_y = int(HEIGHT * 0.5)  # Static y-coordinate proportional to screen height
-    input_box = pygame.Rect(WIDTH//2 - 100, input_box_y, 200, 40)
+    input_box_y: float = clue_box_y  # Static y-coordinate proportional to screen height
+    input_box = pygame.Rect(WIDTH//2 - (0.5 * width), input_box_y, width, 40)
     clue_font = pygame.font.Font(None, 36)
 
     while True:
@@ -127,6 +129,8 @@ def handle_user_input(clue_text: list[str]):
         pygame.draw.rect(screen, LEVEL_BUTTON_COLOR, input_box, 2)
         input_text = clue_font.render(user_input.upper(), True, TEXT_COLOR)
         screen.blit(input_text, (input_box.x+5, input_box.y+5))
+        if image:
+            screen.blit(image, (find_top_left_x(image_width), find_top_left_y(image_height)))
         
         pygame.display.update()
 
@@ -143,13 +147,22 @@ def handle_user_input(clue_text: list[str]):
                 elif event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]
                 else:
-                    user_input += event.unicode
+                    if width == SMALL_CLUE_BOX_WIDTH and len(user_input) < 9:
+                        user_input += event.unicode
+                    elif width == BIG_CLUE_BOX_WIDTH and len(user_input) < 46:
+                        user_input += event.unicode
 
 def display_clue(clue_text: list[str]):
     clue_font = pygame.font.Font(None, 36)
     for i, line in enumerate(clue_text):
         text_surface = clue_font.render(line, True, TEXT_COLOR)
         screen.blit(text_surface, (WIDTH//2 - text_surface.get_width()//2, HEIGHT//6 + i * 40))
+
+def find_top_left_x(width) -> float: # Find's correct x coordinate to center image
+    return (WIDTH - width) / 2
+
+def find_top_left_y(height) -> float: # Find's correct y coordinate to center image
+    return (HEIGHT - height) / 2
 
 def level_2():
     global user_input
@@ -162,7 +175,7 @@ def level_2():
         "What word am I?"
     ]
 
-    user_input = handle_user_input(clue_text)
+    user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH, None, (0.5*HEIGHT))
     if user_input.upper() == "EMPTY":
         unlock_level(3)
         set_screen_state('main_menu')
@@ -171,7 +184,48 @@ def level_2():
 
 def level_3():
     screen.fill(BG_COLOR)
-    screen.blit(lvl3_image)
+    x = find_top_left_x(LEVEL_3_IMAGE_WIDTH/3)
+    y = find_top_left_y(LEVEL_3_IMAGE_HEIGHT/3)
+    screen.blit(lvl3_image, (x, y))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                set_screen_state('main_menu')
+    
+    user_input = handle_user_input(["What is the best move for black? (answer in chess notation)"], 
+                                   SMALL_CLUE_BOX_WIDTH,
+                                   lvl3_image,
+                                   0.8*HEIGHT,
+                                   LEVEL_3_IMAGE_WIDTH, 
+                                   LEVEL_3_IMAGE_HEIGHT)
+    if user_input.upper() == "RH2+":
+        popup(right_image, 1000)
+        set_screen_state('main_menu')
+        unlock_level(4)
+    else:
+        popup(wrong_image, 1000)
+
+    pygame.display.update()
+
+def level_4():
+    screen.fill(BG_COLOR)
+
+    clue_text = [
+        ".. -. -.-. --- .-. .-. . -.-. -",
+        "Decipher this morse code!"
+    ]
+    user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
+    if user_input.upper() == "INCORRECT":
+        popup(right_image, 1000)
+        unlock_level(5)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
 
 def popup(img: Surface, duration):
     start_time = pygame.time.get_ticks()
@@ -187,9 +241,6 @@ def unlock_level(level):
     if level not in levels_unlocked:   
         levels_unlocked.append(level)
 
-def center_image(img_width, img_height):
-    return (WIDTH - img_width) / 2, (HEIGHT - img_height) / 2
-
 def set_screen_state(state):
     global screen_state
     screen_state = state
@@ -204,5 +255,11 @@ while True:
 
         case 'level_2': 
             level_2()
+
+        case 'level_3':
+            level_3()
+
+        case 'level_4':
+            level_4()
 
     pygame.display.update()
