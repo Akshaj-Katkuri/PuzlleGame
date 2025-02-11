@@ -22,6 +22,7 @@ BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
 LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 444
 LEVEL_7_IMAGE_WIDTH, LEVEL_7_IMAGE_HEIGHT = 524, 284
+LEVEL_10_IMAGE_WIDTH, LEVEL_10_IMAGE_HEIGHT = 1074 * 2/3 , 379 * 2/3
 
 
 # Images
@@ -38,6 +39,8 @@ lvl5_image = pygame.image.load("level_5.png")
 lvl5_image = pygame.transform.scale(lvl5_image, (LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT))
 lvl7_image = pygame.image.load("level_7.png")
 lvl7_image = pygame.transform.scale(lvl7_image, (LEVEL_7_IMAGE_WIDTH, LEVEL_7_IMAGE_HEIGHT))
+lvl10_image = pygame.image.load("level_10.png")
+lvl10_image = pygame.transform.scale(lvl10_image, (LEVEL_10_IMAGE_WIDTH, LEVEL_10_IMAGE_HEIGHT))
 
 # User info
 levels_unlocked = [1,2,3,4,5,6,7,8,9,10]
@@ -283,6 +286,17 @@ def level_7():
     else:
         popup(wrong_image, 1000)
 
+def level_10(): 
+    screen.fill(BG_COLOR)
+    clue_text = ['What song is this?']
+    user_input = handle_user_input(clue_text, BIG_CLUE_BOX_WIDTH, image=lvl10_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_10_IMAGE_WIDTH, image_height=LEVEL_10_IMAGE_HEIGHT)
+    if user_input.upper() == "HAPPY BIRTHDAY":
+        popup(right_image, 1000)
+        unlock_level(11)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
+
 def get_random_words(file_path, num_words):
     with open(file_path, 'r') as file:
         words = file.read().splitlines()
@@ -331,5 +345,14 @@ while True:
 
         case 'level_7':
             level_7()
+
+        case 'level_8': 
+            pass
+
+        case 'level_9':
+            pass
+
+        case 'level_10':
+            level_10()
 
     pygame.display.update()

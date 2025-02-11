@@ -6,11 +6,11 @@ Level 5: Find a grayscale color using a reference image that is grayscaled
 Level 6: Typing game, 10 words in 60 wpm
 Level 7: Solve the integral
 Level 8: Memorize the 4x4 matrix
-Level 9: Trivia! 
+Level 9: Translate sentence from Spanish
 Level 10: Figure out the music piece with the sheet music
-Level 11: Translate sentence from Spanish
+Level 11: Trivia!
 Level 12: Figure out the song with short audio clip
-Level 13: Guess Brawler by voice line 
+Level 13: Guess Brawler by voice line
 Level 14: 
 Level 15:
 Level 16:
