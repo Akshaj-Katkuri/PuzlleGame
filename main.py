@@ -319,6 +319,19 @@ def level_8():
     else:
         popup(wrong_image, 1000)
 
+def level_9():
+    screen.fill(BG_COLOR)
+    clue_text = ['donde esta la biblioteca?']
+    user_input = handle_user_input(clue_text, BIG_CLUE_BOX_WIDTH)
+    if user_input is None:
+        return
+    if user_input.upper() == "WHERE IS THE LIBRARY?":
+        popup(right_image, 1000)
+        unlock_level(10)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
+
 def level_10(): 
     screen.fill(BG_COLOR)
     clue_text = ['What song is this?']
@@ -385,7 +398,7 @@ while True:
             level_8()
 
         case 'level_9':
-            pass
+            level_9()
 
         case 'level_10':
             level_10()
