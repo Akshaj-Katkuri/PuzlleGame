@@ -158,7 +158,7 @@ def handle_user_input(clue_text: list[str], width: float, image=None, clue_box_y
                     start_time = pygame.time.get_ticks()
                 if event.key == pygame.K_ESCAPE:
                     set_screen_state('main_menu')
-                    return ""
+                    return None
                 elif event.key == pygame.K_RETURN:
                     if time_limit:
                         type_duration = pygame.time.get_ticks() - start_time
@@ -200,6 +200,8 @@ def level_2():
     ]
 
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
+    if user_input is None:
+        return
     if user_input.upper() == "EMPTY":
         unlock_level(3)
         set_screen_state('main_menu')
@@ -227,6 +229,8 @@ def level_3():
                                    0.8*HEIGHT,
                                    LEVEL_3_IMAGE_WIDTH, 
                                    LEVEL_3_IMAGE_HEIGHT)
+    if user_input is None:
+        return
     if user_input.upper() == "RH2+":
         popup(right_image, 1000)
         set_screen_state('main_menu')
@@ -244,6 +248,8 @@ def level_4():
         "Decipher this morse code!"
     ]
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
+    if user_input is None:
+        return
     if user_input.upper() == "MASSIVE":
         popup(massive_image, 1000)
         unlock_level(5)
@@ -258,6 +264,8 @@ def level_5():
                                    0.9*HEIGHT, 
                                    LEVEL_5_IMAGE_WIDTH, 
                                    LEVEL_5_IMAGE_HEIGHT)
+    if user_input is None:
+        return
     if user_input.upper() == "RED":
         popup(right_image, 1000)
         unlock_level(6)
@@ -268,6 +276,8 @@ def level_5():
 def level_6():
     random_words = get_random_words('words.txt', 7)
     user_input = handle_user_input(["Typing Test!", "Type the words as fast as you can (full accuracy)", random_words], BIG_CLUE_BOX_WIDTH, font_size=24, time_limit=70000)
+    if user_input is None:
+        return
     if user_input.upper() == random_words.upper() and type_duration <= 70000:
         popup(right_image, 1000)
         unlock_level(7)
@@ -279,9 +289,32 @@ def level_7():
     screen.fill(BG_COLOR)
     clue_text = ['Evaluate this integral']
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH, image=lvl7_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_7_IMAGE_WIDTH, image_height=LEVEL_7_IMAGE_HEIGHT)
+    if user_input is None:
+        return
     if user_input == "-20":
         popup(right_image, 1000)
         unlock_level(8)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
+
+def level_8():
+    screen.fill(BG_COLOR)
+    matrix = [[random.randint(1,10) for i in range(4)] for x in range(4)]
+    display_clue(''.join(str(row)) for row in matrix)
+    pygame.display.update()
+    
+    pygame.time.wait(4000)
+
+    row = random.randint(0,3)
+    column = random.randint(0,3)
+    user_input = handle_user_input([f"What was the number in row {row+1} and column {column+1}"], SMALL_CLUE_BOX_WIDTH)
+
+    if user_input is None:
+        return
+    if user_input == str(matrix[row][column]):
+        popup(right_image, 1000)
+        unlock_level(9)
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
@@ -290,6 +323,8 @@ def level_10():
     screen.fill(BG_COLOR)
     clue_text = ['What song is this?']
     user_input = handle_user_input(clue_text, BIG_CLUE_BOX_WIDTH, image=lvl10_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_10_IMAGE_WIDTH, image_height=LEVEL_10_IMAGE_HEIGHT)
+    if user_input is None:
+        return
     if user_input.upper() == "HAPPY BIRTHDAY":
         popup(right_image, 1000)
         unlock_level(11)
@@ -347,7 +382,7 @@ while True:
             level_7()
 
         case 'level_8': 
-            pass
+            level_8()
 
         case 'level_9':
             pass
