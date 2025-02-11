@@ -9,6 +9,7 @@ pygame.init()
 
 # Constants
 # WIDTH, HEIGHT = 1920, 1200
+# WIDTH, HEIGHT = 1920, 1080
 WIDTH, HEIGHT = 800, 600
 BUTTON_WIDTH, BUTTON_HEIGHT = 3/17 * WIDTH, 1/11 * HEIGHT
 LEVEL_BUTTON_COLOR = (0, 128, 255)
@@ -51,7 +52,7 @@ lvl10_image = pygame.image.load("level_10.png")
 lvl10_image = pygame.transform.scale(lvl10_image, (LEVEL_10_IMAGE_WIDTH, LEVEL_10_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1,2,3,4,5,6,7,8,9,10]
+levels_unlocked = [1]
 type_duration = 0
 
 # screen info
@@ -309,10 +310,16 @@ def level_7():
 def level_8():
     screen.fill(BG_COLOR)
     matrix = [[random.randint(1,10) for i in range(4)] for x in range(4)]
-    display_clue(''.join(str(row)) for row in matrix)
+    display_clue([''.join(str(row)) for row in matrix])
     pygame.display.update()
     
-    pygame.time.wait(4000)
+    # Replace pygame.time.wait with a loop
+    start_time = pygame.time.get_ticks()
+    while pygame.time.get_ticks() - start_time < 4000:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
     row = random.randint(0,3)
     column = random.randint(0,3)
@@ -352,6 +359,21 @@ def level_10():
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
+
+def level_11():
+    screen.fill(BG_COLOR)
+    display_clue(["Congratulations!", "More levels coming soon!"], 60)
+    pygame.display.update()
+    
+    # Replace pygame.time.wait with a loop
+    start_time = pygame.time.get_ticks()
+    while pygame.time.get_ticks() - start_time < 3000:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+    set_screen_state('main_menu')
 
 def get_random_words(file_path, num_words):
     with open(file_path, 'r') as file:
@@ -410,5 +432,8 @@ while True:
 
         case 'level_10':
             level_10()
+
+        case 'level_11':
+            level_11()
 
     pygame.display.update()
