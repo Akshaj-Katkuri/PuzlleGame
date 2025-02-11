@@ -21,11 +21,14 @@ BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
 LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 444
 
+
 # Images
 wrong_image = pygame.image.load("Red_X.svg.png")
 wrong_image = pygame.transform.scale(wrong_image, (.1 * WIDTH, .1 * HEIGHT))
 right_image = pygame.image.load("Green_check.svg.png")
 right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
+massive_image = pygame.image.load("massive.png")
+massive_image = pygame.transform.scale(massive_image, (.1 * WIDTH, .1 * HEIGHT))
 lvl1_image = pygame.image.load("level_1.png")
 lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
 lvl3_image = pygame.image.load("level_3.png")
@@ -34,7 +37,7 @@ lvl5_image = pygame.image.load("level_5.png")
 lvl5_image = pygame.transform.scale(lvl5_image, (LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1,2,3,4,5]
+levels_unlocked = [1,2,3,4,5,6,7,8,9,10]
 type_duration = 0
 
 # screen info
@@ -268,7 +271,7 @@ def level_6():
 
 def level_7():
     screen.fill(BG_COLOR)
-    clue_text = ['Solve this integral!']
+    clue_text = ['Solve this integral!' , '∫(x^2 + 2x + 1) dx']
 
 def get_random_words(file_path, num_words):
     with open(file_path, 'r') as file:
