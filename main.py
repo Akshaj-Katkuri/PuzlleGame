@@ -18,6 +18,7 @@ BG_COLOR = (28, 170, 156)
 LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992/3, 985/3
 BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
+LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 360
 
 # Images
 wrong_image = pygame.image.load("Red_X.svg.png")
@@ -26,8 +27,10 @@ right_image = pygame.image.load("Green_check.svg.png")
 right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
 lvl1_image = pygame.image.load("level_1.png")
 lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
-lvl3_image = pygame.image.load("chesspuzlle.png")
+lvl3_image = pygame.image.load("level_3.png")
 lvl3_image = pygame.transform.scale(lvl3_image, (LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT))
+lvl5_image = pygame.image.load("level_5.png")
+lvl5_image = pygame.transform.scale(lvl5_image, (LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT))
 
 # User info
 levels_unlocked = [1, 2, 3, 4]
@@ -216,13 +219,31 @@ def level_4():
     screen.fill(BG_COLOR)
 
     clue_text = [
-        ".. -. -.-. --- .-. .-. . -.-. -",
+        "-- .- ... ... .. ...-",
         "Decipher this morse code!"
     ]
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
-    if user_input.upper() == "INCORRECT":
+    if user_input.upper() == "MASSIVE":
         popup(right_image, 1000)
         unlock_level(5)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
+
+def level_5():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                set_screen_state('main_menu')
+    
+    user_input = handle_user_input(["What is this color according to the gray scale image?"], SMALL_CLUE_BOX_WIDTH, lvl5_image, 0.8*HEIGHT, LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT)
+    if user_input.upper() == "RED":
+        popup(right_image, 1000)
+        unlock_level(6)
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
@@ -261,5 +282,8 @@ while True:
 
         case 'level_4':
             level_4()
+
+        case 'level_5':
+            level_5()
 
     pygame.display.update()
