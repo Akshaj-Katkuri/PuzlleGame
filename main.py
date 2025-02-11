@@ -20,6 +20,7 @@ LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992/3, 985/3
 BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
 LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 444
+LEVEL_7_IMAGE_WIDTH, LEVEL_7_IMAGE_HEIGHT = 524, 284
 
 
 # Images
@@ -28,13 +29,14 @@ wrong_image = pygame.transform.scale(wrong_image, (.1 * WIDTH, .1 * HEIGHT))
 right_image = pygame.image.load("Green_check.svg.png")
 right_image = pygame.transform.scale(right_image, (.1 * WIDTH, .1 * HEIGHT))
 massive_image = pygame.image.load("massive.png")
-massive_image = pygame.transform.scale(massive_image, (.1 * WIDTH, .1 * HEIGHT))
 lvl1_image = pygame.image.load("level_1.png")
 lvl1_image = pygame.transform.scale(lvl1_image, (LEVEL_1_IMAGE_WIDTH, LEVEL_1_IMAGE_HEIGHT))
 lvl3_image = pygame.image.load("level_3.png")
 lvl3_image = pygame.transform.scale(lvl3_image, (LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT))
 lvl5_image = pygame.image.load("level_5.png")
 lvl5_image = pygame.transform.scale(lvl5_image, (LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT))
+lvl7_image = pygame.image.load("level_7.png")
+lvl7_image = pygame.transform.scale(lvl7_image, (LEVEL_7_IMAGE_WIDTH, LEVEL_7_IMAGE_HEIGHT))
 
 # User info
 levels_unlocked = [1,2,3,4,5,6,7,8,9,10]
@@ -239,7 +241,7 @@ def level_4():
     ]
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
     if user_input.upper() == "MASSIVE":
-        popup(right_image, 1000)
+        popup(massive_image, 1000)
         unlock_level(5)
         set_screen_state('main_menu')
     else:
@@ -260,9 +262,9 @@ def level_5():
         popup(wrong_image, 1000)
 
 def level_6():
-    random_words = get_random_words('words.txt', 5)
-    user_input = handle_user_input(["Typing Test!", "Type the words as fast as you can (full accuracy)", random_words], BIG_CLUE_BOX_WIDTH, font_size=24, time_limit=10000)
-    if user_input.upper() == random_words.upper() and type_duration <= 10000:
+    random_words = get_random_words('words.txt', 7)
+    user_input = handle_user_input(["Typing Test!", "Type the words as fast as you can (full accuracy)", random_words], BIG_CLUE_BOX_WIDTH, font_size=24, time_limit=70000)
+    if user_input.upper() == random_words.upper() and type_duration <= 70000:
         popup(right_image, 1000)
         unlock_level(7)
         set_screen_state('main_menu')
@@ -271,7 +273,14 @@ def level_6():
 
 def level_7():
     screen.fill(BG_COLOR)
-    clue_text = ['Solve this integral!' , '∫(x^2 + 2x + 1) dx']
+    clue_text = ['Evaluate this integral']
+    user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH, image=lvl7_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_7_IMAGE_WIDTH, image_height=LEVEL_7_IMAGE_HEIGHT)
+    if user_input == "-20":
+        popup(right_image, 1000)
+        unlock_level(8)
+        set_screen_state('main_menu')
+    else:
+        popup(wrong_image, 1000)
 
 def get_random_words(file_path, num_words):
     with open(file_path, 'r') as file:
