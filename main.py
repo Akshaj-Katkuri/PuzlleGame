@@ -18,7 +18,7 @@ BG_COLOR = (28, 170, 156)
 LEVEL_3_IMAGE_WIDTH, LEVEL_3_IMAGE_HEIGHT = 992/3, 985/3
 BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH # 46 max characters
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
-LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 360
+LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT = 643, 444
 
 # Images
 wrong_image = pygame.image.load("Red_X.svg.png")
@@ -33,7 +33,7 @@ lvl5_image = pygame.image.load("level_5.png")
 lvl5_image = pygame.transform.scale(lvl5_image, (LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT))
 
 # User info
-levels_unlocked = [1, 2, 3, 4]
+levels_unlocked = [1]
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -219,7 +219,7 @@ def level_4():
     screen.fill(BG_COLOR)
 
     clue_text = [
-        "-- .- ... ... .. ...-",
+        "-- .- ... ... .. ...- .",
         "Decipher this morse code!"
     ]
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
@@ -240,7 +240,7 @@ def level_5():
             if event.key == pygame.K_ESCAPE:
                 set_screen_state('main_menu')
     
-    user_input = handle_user_input(["What is this color according to the gray scale image?"], SMALL_CLUE_BOX_WIDTH, lvl5_image, 0.8*HEIGHT, LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT)
+    user_input = handle_user_input(["What is this color according to the gray scale image?"], SMALL_CLUE_BOX_WIDTH, lvl5_image, 0.9*HEIGHT, LEVEL_5_IMAGE_WIDTH, LEVEL_5_IMAGE_HEIGHT)
     if user_input.upper() == "RED":
         popup(right_image, 1000)
         unlock_level(6)
