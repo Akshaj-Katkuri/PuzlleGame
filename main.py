@@ -8,6 +8,7 @@ import random
 pygame.init()
 
 # Constants
+# WIDTH, HEIGHT = 1920, 1200
 WIDTH, HEIGHT = 800, 600
 BUTTON_WIDTH, BUTTON_HEIGHT = 3/17 * WIDTH, 1/11 * HEIGHT
 LEVEL_BUTTON_COLOR = (0, 128, 255)
