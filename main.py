@@ -9,8 +9,8 @@ pygame.init()
 
 # Constants
 # WIDTH, HEIGHT = 1920, 1200
-# WIDTH, HEIGHT = 1920, 1080
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1920, 1080
+# WIDTH, HEIGHT = 800, 600
 BUTTON_WIDTH, BUTTON_HEIGHT = 3/17 * WIDTH, 1/11 * HEIGHT
 LEVEL_BUTTON_COLOR = (0, 128, 255)
 LEVEL_HOVER_COLOR = (0, 255, 255)
@@ -21,6 +21,7 @@ BIG_CLUE_BOX_WIDTH = 0.8 * WIDTH
 SMALL_CLUE_BOX_WIDTH = 0.2 * WIDTH # 9 max characters
 
 # Proportions for images relative to screen dimensions
+# These constants (upto line 37) were obtained with the help of AI (ChatGPT)
 LEVEL_1_IMAGE_WIDTH_RATIO, LEVEL_1_IMAGE_HEIGHT_RATIO = 353 / 800, 344 / 600
 LEVEL_3_IMAGE_WIDTH_RATIO, LEVEL_3_IMAGE_HEIGHT_RATIO = 992 / 3 / 800, 985 / 3 / 600
 LEVEL_5_IMAGE_WIDTH_RATIO, LEVEL_5_IMAGE_HEIGHT_RATIO = 643 / 800, 444 / 600
@@ -54,6 +55,7 @@ lvl10_image = pygame.transform.scale(lvl10_image, (LEVEL_10_IMAGE_WIDTH, LEVEL_1
 # User info
 levels_unlocked = [1]
 type_duration = 0
+user_input = ""
 
 # screen info
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -62,8 +64,6 @@ pygame.display.set_caption("Puzzle Game Level Selector")
 
 # Font setup
 font = pygame.font.Font(None, 40)
-
-user_input = ""
 
 # Function to draw buttons
 def draw_button(text, x, y, unlocked):
@@ -81,6 +81,7 @@ def draw_button(text, x, y, unlocked):
     text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
     screen.blit(text_surface, text_rect)
 
+# This function was made by AI (ChatGPT)
 def draw_level_buttons():
     for x in range(4):
         for y in range(5):
@@ -101,6 +102,7 @@ def main_menu():
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
+            # Lines 106 - 113 was written with AI (ChatGPT)
             for x in range(4):
                 for y in range(5):
                     level = x * 5 + y + 1
@@ -110,7 +112,7 @@ def main_menu():
                         if level in levels_unlocked:
                             set_screen_state(f'level_{level}')
 
-
+# Tic tac toe game. Place X in bottom left corner to win
 def level_1():
     screen.fill(BG_COLOR)
     x = find_top_left_x(LEVEL_1_IMAGE_WIDTH)
@@ -128,6 +130,7 @@ def level_1():
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
+            # calculates and checks if clicked in correct spot
             if (x) < mouse_x < (1/3 * LEVEL_1_IMAGE_WIDTH + x) and (2/3 * LEVEL_1_IMAGE_HEIGHT + y) < mouse_y < (LEVEL_1_IMAGE_HEIGHT + y):
                 popup(right_image, 1000)
                 unlock_level(2)
@@ -135,6 +138,7 @@ def level_1():
             else: 
                 popup(wrong_image, 1000)
 
+# Function to handle user input
 def handle_user_input(clue_text: list[str], width: float, image=None, clue_box_y: float=(0.5*HEIGHT), image_width: float=None, image_height: float=None, font_size: int = 36, time_limit: int=None) -> str:
     global user_input, type_duration
     start_time = None
@@ -158,6 +162,7 @@ def handle_user_input(clue_text: list[str], width: float, image=None, clue_box_y
         
         pygame.display.update()
 
+        # Modifies user_input variable based on what user types
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -180,11 +185,13 @@ def handle_user_input(clue_text: list[str], width: float, image=None, clue_box_y
                     elif width == BIG_CLUE_BOX_WIDTH and len(user_input) < 70:
                         user_input += event.unicode
 
+        # If time limit for the level, checks if user started typing and ends level if time limit passes
         if time_limit and start_time: 
             type_duration = pygame.time.get_ticks() - start_time
             if type_duration > time_limit:
                 return user_input
 
+# Displays a text on screen
 def display_clue(clue_text: list[str], font_size: int = 36):
     clue_font = pygame.font.Font(None, font_size)
     for i, line in enumerate(clue_text):
@@ -197,6 +204,7 @@ def find_top_left_x(width) -> float: # Find's correct x coordinate to center ima
 def find_top_left_y(height) -> float: # Find's correct y coordinate to center image
     return (HEIGHT - height) / 2
 
+# A riddle to solve. If you answer EMPTY, you will unlock the next level
 def level_2():
     global user_input
     screen.fill(BG_COLOR)
@@ -217,6 +225,7 @@ def level_2():
     else:
         popup(wrong_image, 1000)
 
+# A chess puzzle. If you answer RH2+, you will unlock the next level
 def level_3():
     screen.fill(BG_COLOR)
     x = find_top_left_x(LEVEL_3_IMAGE_WIDTH/3)
@@ -232,7 +241,7 @@ def level_3():
             if event.key == pygame.K_ESCAPE:
                 set_screen_state('main_menu')
     
-    user_input = handle_user_input(["What is the best move for black? (answer in chess notation)"], 
+    user_input = handle_user_input(["Answer in chess notation"], 
                                    SMALL_CLUE_BOX_WIDTH,
                                    lvl3_image,
                                    0.8*HEIGHT,
@@ -248,13 +257,12 @@ def level_3():
         popup(wrong_image, 1000)
 
     pygame.display.update()
-
+# A morse code puzzle. If you answer MASSIVE, you will unlock the next level
 def level_4():
     screen.fill(BG_COLOR)
 
     clue_text = [
-        "-- .- ... ... .. ...- .",
-        "Decipher this morse code!"
+        "-- .- ... ... .. ...- ."
     ]
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH)
     if user_input is None:
@@ -266,6 +274,7 @@ def level_4():
     else:
         popup(wrong_image, 1000)
 
+# A gray-scale puzzle. If you answer RED, you will unlock the next level
 def level_5():
     user_input = handle_user_input([""], 
                                    SMALL_CLUE_BOX_WIDTH, 
@@ -282,6 +291,7 @@ def level_5():
     else:
         popup(wrong_image, 1000)
 
+# A typing test. If you type the words correctly and in under 7 seconds, you will unlock the next level
 def level_6():
     random_words = get_random_words('words.txt', 7)
     user_input = handle_user_input(["Typing Test!", "Type the words as fast as you can (full accuracy)", random_words], BIG_CLUE_BOX_WIDTH, font_size=24, time_limit=70000)
@@ -293,10 +303,10 @@ def level_6():
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
-
+# A math puzzle. If you answer -20, you will unlock the next level
 def level_7():
     screen.fill(BG_COLOR)
-    clue_text = ['Evaluate this integral']
+    clue_text = ['']
     user_input = handle_user_input(clue_text, SMALL_CLUE_BOX_WIDTH, image=lvl7_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_7_IMAGE_WIDTH, image_height=LEVEL_7_IMAGE_HEIGHT)
     if user_input is None:
         return
@@ -306,7 +316,7 @@ def level_7():
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
-
+# A memory puzzle. If you answer correctly, you will unlock the next level
 def level_8():
     screen.fill(BG_COLOR)
     matrix = [[random.randint(1,10) for i in range(4)] for x in range(4)]
@@ -333,7 +343,7 @@ def level_8():
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
-
+# A language puzzle. If you answer WHERE IS THE LIBRARY?, you will unlock the next level
 def level_9():
     screen.fill(BG_COLOR)
     clue_text = ['donde esta la biblioteca?']
@@ -346,10 +356,10 @@ def level_9():
         set_screen_state('main_menu')
     else:
         popup(wrong_image, 1000)
-
+# A birthday puzzle. If you answer HAPPY BIRTHDAY, you will unlock the next level 
 def level_10(): 
     screen.fill(BG_COLOR)
-    clue_text = ['What song is this?']
+    clue_text = ['']
     user_input = handle_user_input(clue_text, BIG_CLUE_BOX_WIDTH, image=lvl10_image, clue_box_y=0.8*HEIGHT, image_width=LEVEL_10_IMAGE_WIDTH, image_height=LEVEL_10_IMAGE_HEIGHT)
     if user_input is None:
         return
@@ -360,6 +370,7 @@ def level_10():
     else:
         popup(wrong_image, 1000)
 
+# Level 11-20 is in progress so it displays coming soon screen
 def level_11():
     screen.fill(BG_COLOR)
     display_clue(["Congratulations!", "More levels coming soon!"], 60)
@@ -375,11 +386,13 @@ def level_11():
 
     set_screen_state('main_menu')
 
+# Returns a list of random words from words.seperated with a space
 def get_random_words(file_path, num_words):
     with open(file_path, 'r') as file:
         words = file.read().splitlines()
     return ' '.join(random.sample(words, num_words))
 
+# Function to show an image for a certain duration
 def popup(img: Surface, duration):
     start_time = pygame.time.get_ticks()
     while pygame.time.get_ticks() - start_time < duration:
@@ -390,14 +403,18 @@ def popup(img: Surface, duration):
                 pygame.quit()
                 sys.exit()
 
+# Function to unlock a level
 def unlock_level(level):
+    # Make sure level is not already unlocked
     if level not in levels_unlocked:   
         levels_unlocked.append(level)
 
+# Changes the state of the screen
 def set_screen_state(state):
     global screen_state
     screen_state = state
 
+# A loop that updates the screen based on screen state
 while True: 
     match screen_state: 
         case 'main_menu':
