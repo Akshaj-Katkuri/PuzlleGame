@@ -1,9 +1,6 @@
 # PuzlleGame
 
-A collection of short, unique puzzle challenges for the brain in Python.
-
-## 🎯 Overview
-Each level presents a new puzzle—solve them all to win!
+Puzlle, not puzzle. This is not a typo. This is a collection of short, unique puzzle challenges written in Python.
 
 ## ✨ Features
 - Multiple distinct puzzle types
